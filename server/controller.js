@@ -8,7 +8,6 @@ const bodyParser = require('body-parser');
 const morgan = require('morgan');
 
 const viewBooks = require('./view-books');
-// const viewBookAuthors = require('./view-book-authors');
 
 // setup middleware
 app.use(morgan('dev'));

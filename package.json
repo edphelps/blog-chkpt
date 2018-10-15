@@ -5,19 +5,19 @@
   "main": "controller.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon controller.js"
+    "start": "nodemon ./be/controller.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/edphelps/bookstore-chkpt.git"
+    "url": "git+https://github.com/edphelps/blog-chkpt.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/edphelps/bookstore-chkpt/issues"
+    "url": "https://github.com/edphelps/blog-chkpt/issues"
   },
-  "homepage": "https://github.com/edphelps/bookstore-chkpt#readme",
+  "homepage": "https://github.com/edphelps/blog-chkpt#readme",
   "dependencies": {
     "body-parser": "^1.18.3",
     "chai": "^4.2.0",

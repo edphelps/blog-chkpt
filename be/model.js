@@ -2,12 +2,12 @@ const uuidv4 = require('uuid/v4');
 const fs = require('fs');
 const { promisify } = require('util');
 
-const DB_FILE_NAME = './books.json';
+const DB_FILE_NAME = './be/blog.json';
 
 /* **************************************************
 *  loadDb()
 *  Load database
-*  @return Promise: [ {book}, ... ]
+*  @return Promise: [ {blog_entry}, ... ]
 *  .catch(error) -- file not found or can't be read
 ***************************************************** */
 function loadDb() {
@@ -18,7 +18,7 @@ function loadDb() {
 /* **************************************************
 *  saveDb()
 *  Save database
-*  @return Promise: [ {book}, ... ]
+*  @return Promise: [ {blog_entry}, ... ]
 *  .catch(error) file not found or can't be read
 ***************************************************** */
 function saveDb(aBooks) {

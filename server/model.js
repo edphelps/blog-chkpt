@@ -2,7 +2,7 @@ const uuidv4 = require('uuid/v4');
 const fs = require('fs');
 const { promisify } = require('util');
 
-const DB_FILE_NAME = './be/blog.json';
+const DB_FILE_NAME = './server/blog.json';
 
 /* **************************************************
 *  loadDb()
@@ -103,6 +103,8 @@ function updatePost(_oUpdatePost) {
       if (idxFndPost === -1) {
         throw new Error(`post not found: ${oUpdatePost.id}`);
       }
+      // fill in rest of oUpdatePost
+      oUpdatePost.added = aPosts[idxFndPost].added;
       oUpdatePost.edited = true; // set flag that post was edited
       aPosts[idxFndPost] = oUpdatePost;
     })

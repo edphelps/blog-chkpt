@@ -7,14 +7,14 @@ const port = process.env.PORT || 3000;
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
 
-const viewBooks = require('./view-books');
+const viewPosts = require('./view-posts');
 
 // setup middleware
 app.use(morgan('dev'));
 app.use(bodyParser.json());
 
 // routes
-app.use('/books', viewBooks);
+app.use('/posts', viewPosts);
 
 // ===========================================================
 // 404
@@ -28,16 +28,19 @@ app.use((req, res, next) => {
 /* **************************************************
 *  restructureError()
 *  @param Error -- actual Error object
-*  Returns object { message: 'xxxx', stack: 'xxx' }
+*  Returns object { status: 123, message: 'xxxx', stack: 'xxx' }
 ***************************************************** */
 function restructureError(error) {
+  // return if error not in the expected form
   if (!error.stack)
     return error;
 
+  // look for ' at ' seperating error message from call stack
   const i = error.stack.search(' at ');
   if (i === -1)
     return { message: error.message, stack: 'undetermined', status: error.status };
 
+  // parse the call_stack portion of the string from end of error.stack
   const restructured = {
     error: {
       message: error.message,
@@ -54,9 +57,9 @@ function restructureError(error) {
 // ===========================================================
 app.use((err, req, res, next) => {
   const status = err.status || 500;
-  console.log("=========== APP ERROR ==========");
+  console.log("======================= APP ERROR =======================");
   console.log(err);
-  console.log("^^^^^^^^^^^ APP ERROR ^^^^^^^^^");
+  console.log("^^^^^^^^^^^^^^^^^^^^^^^ APP ERROR ^^^^^^^^^^^^^^^^^^^^^^");
   res.status(status).json(restructureError(err));
   next();
 });

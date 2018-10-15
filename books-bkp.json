@@ -1,0 +1,28 @@
+[
+{ "id": "91eabf57-f817-42ca-914b-5517120acde6",
+  "title": "The Bell Jar",
+  "borrowed": true,
+  "description": "The Bell Jar chronicles the crack-up of Esther Greenwood: brilliant, beautiful, enormously talented, and successful, but slowly going under -- maybe for the last time.",
+  "authors": [
+    { "id": "91eabf57-f817-42ca-914b-5517120acde8", "first": "Sylvia", "last": "Plath" }
+  ]
+},
+{ "id": "91eabf57-f817-42ca-914b-5517120acde7",
+  "title": "The Art of the Deal",
+  "borrowed": false,
+  "description": "President Donald J. Trump lays out his professional and personal worldview in this classic work—a firsthand account of the rise of America’s foremost deal-maker.",
+  "authors": [
+    { "id": "91eabf57-f817-42ca-914b-5517120acde9", "first": "Donald", "last": "Trump" },
+    { "id": "91eabf57-f817-42ca-914b-5517120acde0", "first": "Tony", "last": "Schwartz" }
+  ]
+},
+{ "id": "91eabf57-f817-42ca-914b-5517120acde3",
+  "title": "Big Data",
+  "borrowed": false,
+  "description": "Oxford professor and author Viktor Mayer-Schönberger joins Economist data editor and commentator Kenneth Cukier to deliver insight into the hottest trend in technology.",
+  "authors": [
+    { "id": "91eabf57-f817-42ca-914b-5517120acde4", "first": "Viktor", "last": "Mayer-Schöberger" },
+    { "id": "91eabf57-f817-42ca-914b-5517120acde5", "first": "Kenneth", "last": "Cukier" }
+  ]
+}
+]

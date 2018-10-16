@@ -1,4 +1,4 @@
-const uuidv4 = require('uuid/v4');
+//const uuidv4 = require('uuid/v4');
 const fs = require('fs');
 const { promisify } = require('util');
 
@@ -46,8 +46,9 @@ function createPost(_oNewPost) {
   return loadDb()
     .then((_aPosts) => {
       aPosts = _aPosts;
+      const nextId = aPosts.reduce((acc, cur) => Math.max(acc, cur.id),0) + 1;
       // fill in the rest of the post's fields
-      oNewPost.id = uuidv4();
+      oNewPost.id = nextId;
       oNewPost.added = new Date();
       oNewPost.edited = false;
       aPosts.unshift(oNewPost);
@@ -95,7 +96,7 @@ function readPost(sId) {
 ***************************************************** */
 function updatePost(_oUpdatePost) {
   let aPosts = [];
-  let oUpdatePost = _oUpdatePost;
+  const oUpdatePost = _oUpdatePost;
   return loadDb()
     .then((_aPosts) => {
       aPosts = _aPosts;
@@ -146,9 +147,9 @@ module.exports = {
 /* ========= TEST CODE ========== */
 
 // createPost({ title: "Today's weather", content: "warming" })
-  // .then((oPost) => {
-  //   console.log("Added: ", oPost);
-  // });
+// .then((oPost) => {
+//   console.log("Added: ", oPost);
+// });
 
 // createBookAuthor('91eabf57-f817-42ca-914b-5517120acde6', 'Ed', 'Phelps')
 //   .then(author => console.log(author));

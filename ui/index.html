@@ -9,25 +9,38 @@
     <title>My blog</title>
   </head>
   <body>
-    <!-- PAGE TITLE AND BTN-ADD-NEW-->
-    <h1>My blog</h1>
-    <button id='btn-add-new'>Add a new blog post</button>
-
-
-    <!-- NEW POST FIELDS -->
-    <div id='div-new-post' hidden>
-      <fieldset>
-        <label for="title">Title</label>
-        <input type="text" name="title" id="title" autofocus required><br>
-        <label for="content">Content</label>
-        <textarea rows="5" name="content" id="content" required></textarea><br>
-        <button id='btn-save-new'>Save new blog post</button>
-      </fieldset>
+    <!-- PAGE TITLE AND BTN-CREATE-->
+    <div class="jumbotron jumbotron-fluid bg-info text-light">
+      <div class="container">
+        <h1 class="display-3">My blog</h1>
+        <button class="btn btn-secondary" id='btn-create'>Create a New Post</button>
+      </div>
     </div>
 
-    <!-- LIST OF EXISTING POSTS -->
-    <div id='div-existing-posts'>
-      <p>Existing posts go here....</p>
+
+
+    <!-- LIST POSTS AND EDIT A POST -->
+    <div class="container">
+      <div class="row" >
+
+        <!-- LIST OF POSTS  -->
+        <div class="col-4" id='div-post-sel'>
+          <p>selection list of posts....</p>
+        </div>
+
+        <!-- EDIT AREA OF THE POSTS -->
+        <div class="col-8">
+          <div>
+            <fieldset>
+              <label for="title">Title</label><br>
+              <input type="text" name="title" id="title" autofocus required><br>
+              <label for="content">Content</label><br>
+              <textarea rows="5" name="content" id="content" required></textarea><br>
+              <button id='btn-save'>Save Post</button>
+            </fieldset>
+          </div>
+        </div>
+    </div>
     </div>
 
     <!-- Boostrap files -->

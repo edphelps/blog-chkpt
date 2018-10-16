@@ -1,202 +1,133 @@
 
+const URL = "http://localhost:3000/posts/";
 
 /* ====================================================
-*  onchangeSelRole()
-*
-*  Change in selection list changes the image
+*  utils
+
 * ===================================================== */
-function onchangeSelRole() {
-  const selRole = document.getElementById("sel-role");
-  const sImgPath = selRole.options[selRole.selectedIndex].value;
-  // console.log(`New img: ${sImgPath}`);
-  const imgRole = document.getElementById("img-role");
-  imgRole.src = sImgPath;
+function determinePost() {
+  // return post# from hash "#/posts/123/edit"
+  return window.location.hash.replace('#/posts/','').replace(/\/.+/,'')
+}
+function goToPost(post) {
+  // set hash to "#/posts/123"
+  window.location.hash = `#/posts/${post.id}`
 }
 
-let gIntervalKey = 0;
-let gFadeOpacity = 0;
-let gFadeUp = true;
-
-function fadeStatus() {
-
-  const elemStatus = document.getElementById("save-status");
-
-  if (gFadeOpacity >= 2.5) {
-    gFadeUp = false;
-  }
-
-  if (gFadeUp)
-    gFadeOpacity += 0.2;
-  else
-    gFadeOpacity -= 0.2;
-
-  elemStatus.style.opacity = gFadeOpacity;
-
-  if (gFadeOpacity <= 0) {
-    clearInterval(gIntervalKey);
-    gIntervalKey = 0;
-    updateStatus("");
-  }
+function sidebarItem(post) {
+  return `
+    <a href="#/posts/${post.id}" class="list-group-item list-group-item-action">
+      ${post.title}
+    </a>
+  `;
 }
-
-
-/* ====================================================
-*  updateStatus()
-*
-*  Update the status Display
-* ===================================================== */
-function updateStatus(msg) {
-  console.log("updateStatus: "+msg);
-  // console.log("^^update status ^^^");
-
-  const elemStatus = document.getElementById("save-status");
-  if (msg) {
-    elemStatus.style.display = "block";
-    elemStatus.innerText = msg;
-    gFadeUp = true;
-    gFadeOpacity = 0
-    elemStatus.style.opacity = 0;
-    gIntervalKey = setInterval(fadeStatus,100);
-  } else {
-    elemStatus.style.display = "none";
-    elemStatus.innerText = "";
-  }
+function sidebarTemplate(posts, iCurrPost) {
+  const opening = `<ul class="list-group" id='list-of-posts'>`;
+  const closing = `</ul>`;
+  const items = posts.map(sidebarItem).join('');
+  return opening + items + closing;
 }
+function renderList(aPosts, iCurrPost) {
+  const divPostSel = document.getElementById("div-post-sel")
+  divPostSel.innerHTML = sidebarTemplate(aPosts, iCurrPost);
+  const listOfPosts = document.getElementById('list-of-posts');
+  console.log("listOfPosts: ", listOfPosts);
 
-/* ====================================================
-*  onsubmit()
-*
-*  Change in selection list changes the image
-* ===================================================== */
-function onsubmit(e) {
-  e.preventDefault(); // either this or return false to prevent an actual submit from ocurring
-  console.log("onsubmit()");
-
-  updateStatus("");
-
-  const sFname = document.getElementById("fname").value.trim();
-  const sLname = document.getElementById("lname").value.trim();
-
-  const selRole = document.getElementById("sel-role");
-  const sRole = selRole.options[selRole.selectedIndex].innerText;
-  // console.log("role: "+sRole);
-  // if (!sFname || !sLname || selRole.selectedIndex===0) {
-  //   console.log("** form not valid **");
-  //   return;
+  const ahrefs = listOfPosts.querySelectorAll('a');
+  for (const ahref of ahrefs) {
+    console.log("ahref: ", ahref);
+  }
+  // for (let node of document.getElementById('list-of-posts').childNodes) {
+  //   console.log("node: ", node);
   // }
-
-  let oPost = {};
-  oPost.firstName = sFname;
-  oPost.lastName = sLname;
-  oPost.role = sRole;
-
-  console.log("### Post object: "+JSON.stringify(oPost));
-
-  const URL = "https://galvanize-student-apis.herokuapp.com/gpersonnel/users";
-
-  axios.post(URL,oPost)
-    .then((oResponse) => {
-      // console.log("-- POST response --");
-      // console.log(`Data:${JSON.stringify(oResponse)}`);
-      // console.log("^^^POST response ^^^^^^^^");
-      // console.log("--- SUCCESS ----");
-      updateStatus(oResponse.data.message);
-      // console.log("^^^ SUCCESS ^^^^");
-      // console.log("yay, success");
-    }) // then
-    .catch((error) => {
-      // display AJAX error msg
-      // console.log("-- POST error --");
-      // console.log(`${error}`); // I don't understand what error is??
-      // console.log("--- ERROR ---");
-      updateStatus(error.response.data.message);
-      // console.log("^^^^ ERROR ^^^^");
-    }); // catch
-
-  // return false; // either this or e.preventdefault() above since the submit
-                   // was handled above, don't want the form to actually submit.
+}
+function renderBlogPost(oPost) {
+  document.getElementById("title").value = (oPost) ? oPost.title : "--";
+  document.getElementById("content").value = (oPost) ? oPost.content : "--";
 }
 
 /* ====================================================
 *  init()
 *
-*  Load the selection list of roles via axios
+*  Initialize the page, called on all hash changes
 * ===================================================== */
 function init() {
-  return;
-  // LOAD ROLES IN SELECTION LIST
-  const URL = "https://galvanize-student-apis.herokuapp.com/gpersonnel/roles";
+  const hash = window.location.hash;
+  console.log(`--- init(${hash})`, (new Date()).toString().slice(16,24));
+
+  // get all posts
   axios.get(URL)
     .then((oResponse) => {
-      // console.log("-- response --");
-      // console.log(`Data:${JSON.stringify(oResponse)}`);
-      // console.log("^^^^^^^^^^^^^^");
-      const selRole = document.getElementById("sel-role");
-      for (const selection of oResponse.data) {
-        // console.log(JSON.stringify(selection));
-        const elemOption = document.createElement("option");
-        elemOption.value = selection.img;
-        elemOption.innerText = selection.title;
-        selRole.appendChild(elemOption);
-      }
+      const aPosts = oResponse.data;
 
-    }) // then
+      // render selection list of posts
+      let idCurrPost = determinePost();
+      if (!idCurrPost) {
+        goToPost(aPosts[0]);
+        idCurrPost = determinePost();
+      }
+      renderList(aPosts, idCurrPost);
+
+      // render the post edit area
+      const currPost = aPosts.find(post => post.id === idCurrPost);
+      renderBlogPost(currPost);
+    })
     .catch((error) => {
       // display AJAX error msg
       console.log("---------- AJAX error ----------");
       console.log(`${error}`);
       console.log("^^^^^^^^^^ AJAX error ^^^^^^^^^^");
-    }); // catch
+    });
 }
 
 /* ====================================================
-*  toggleAddNew()
-*
+*  toggleAddNew() */
+/*
 *  Toggle visibility of div-add-new and div-existing-post
-*  in resopnse to clicknig "Add a new blog post" or "Save"
+*  in resopnse to clicking "Add a new blog post" or "Save"
 *  when adding a new post
 *
 * ===================================================== */
-function toggleAddNewFields() {
-  const btnAddNew = document.getElementById("btn-add-new");
-  const divNewPost = document.getElementById("div-new-post");
-  const divExistingPosts = document.getElementById("div-existing-posts");
-
-  // Show fields to add new post
-  if (divNewPost.hidden) {
-    btnAddNew.innerText = "Cancel new post";
-    divNewPost.hidden = false;
-    divExistingPosts.hidden = true;
-
-  // cancel adding new post
-  } else {
-    btnAddNew.innerText = "Add a new blog post";
-    document.getElementById("title").value = "";
-    document.getElementById("content").value = "";
-    divNewPost.hidden = true;
-    divExistingPosts.hidden = false;
-  }
-}
+// function toggleAddNewFields() {
+//   const btnAddNew = document.getElementById("btn-create-post");
+//   const divNewPost = document.getElementById("div-new-post");
+//   const divExistingPosts = document.getElementById("div-existing-posts");
+//
+//   // Show fields to add new post
+//   if (divNewPost.hidden) {
+//     btnAddNew.innerText = "Cancel new post";
+//     divNewPost.hidden = false;
+//     divExistingPosts.hidden = true;
+//
+//   // cancel adding new post
+//   } else {
+//     btnAddNew.innerText = "Add a new blog post";
+//     document.getElementById("title").value = "";
+//     document.getElementById("content").value = "";
+//     divNewPost.hidden = true;
+//     divExistingPosts.hidden = false;
+//   }
+// }
 
 /* ====================================================
-*  onclickAddNew()
+*  onclickCreate()
 *
 *  Click to add a new post.
 *    toggle visibility of div-add-new and div-existing-post
 *
 * ===================================================== */
-function onclickAddNew() {
-  toggleAddNewFields();
+function onclickCreate() {
+  // toggleAddNewFields();
 }
 
 /* ====================================================
-*  onclickSaveNew()
+*  onclickSave()
 *
-*  Click to add a new post.
+*  Click to add a new post
 *    toggle visibility of div-add-new and div-existing-post
 *
 * ===================================================== */
-function onclickSaveNew() {
+function onclickSave() {
 
   const sTitle = document.getElementById("title").value.trim();
   const sContent = document.getElementById("content").value.trim();
@@ -208,30 +139,30 @@ function onclickSaveNew() {
   }
 
   // create new blog post in database
-  const URL = "https://galvanize-student-apis.herokuapp.com/gpersonnel/users";
-
-  axios.post(URL,oPost)
+  const url = URL;
+  const oPost = {
+    title: sTitle,
+    content: sContent,
+  };
+  axios.post(url, oPost)
     .then((oResponse) => {
       // console.log("-- POST response --");
       // console.log(`Data:${JSON.stringify(oResponse)}`);
       // console.log("^^^POST response ^^^^^^^^");
-      // console.log("--- SUCCESS ----");
-      updateStatus(oResponse.data.message);
-      // console.log("^^^ SUCCESS ^^^^");
-      // console.log("yay, success");
-    }) // then
+      console.log("--- AJAX SUCCESS ----");
+    })
     .catch((error) => {
       // display AJAX error msg
-      // console.log("-- POST error --");
-      // console.log(`${error}`); // I don't understand what error is??
-      // console.log("--- ERROR ---");
-      updateStatus(error.response.data.message);
+      console.log("---------- AJAX POST error ---------");
+      console.log(`${error}`);
+      console.log("--------------- ERROR --------------");
+      // updateStatus(error.response.data.message);
       // console.log("^^^^ ERROR ^^^^");
-    }); // catch
-
-
-  toggleAddNewFields();
-  return;
+    })
+    .then(() => {
+      // console.log("~~ toggleAddNewFields");
+      toggleAddNewFields();
+    });
 }
 
 /* ====================================================
@@ -241,13 +172,14 @@ function onclickSaveNew() {
 * ===================================================== */
 document.addEventListener('DOMContentLoaded', () => {
 
-  init(); // asynch
+  // init(); // asynch
 
-  document.getElementById("btn-add-new").onclick = onclickAddNew;
-  document.getElementById("btn-save-new").onclick = onclickSaveNew;
+  document.getElementById("btn-create").onclick = onclickCreate;
+  document.getElementById("btn-save").onclick = onclickSave;
 
-  // document.getElementById("sel-role").onchange = onchangeSelRole;
-  // document.getElementById("save-btn").onclick = onclickSaveBtn;
-  // document.getElementById("form").onsubmit = onsubmit;
+  init(); // do a manual call in case user refreshed page, which causes it
+          // to clear but doesn't change the hash so onhashchange() won't fire
 
+  // render everything when the window url hash changes
+  window.onhashchange = init;
 });

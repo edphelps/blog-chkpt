@@ -13,6 +13,9 @@ const viewPosts = require('./view-posts');
 app.use(morgan('dev'));
 app.use(bodyParser.json());
 
+// setup static html folder
+app.use(express.static('ui'));
+
 // routes
 app.use('/posts', viewPosts);
 

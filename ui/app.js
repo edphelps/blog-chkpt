@@ -66,10 +66,33 @@ function renderDisplayPost(oPost) {
   divBlogPost.innerHTML = displayPostTemplate(oPost);
 }
 
+function onclickSave() {
+  const url = URL + determinePost();
+  const oPost = {
+    title: document.getElementById('title').value,
+    content: document.getElementById('content').value,
+  };
+  console.log("*** put url: ", url);
+  console.log("*** put val: ", oPost);
+  axios.put(url, oPost)
+    .then((response) => {
+      console.log("axios put success response: ", (response) ? response : "missing response");
+      // this will generate a data/render refresh
+      window.location.hash = `#/posts/${determinePost()}`;
+      console.log("NEW HASH AFTER PUT: ", window.location.hash);
+    })
+    .catch((error) => {
+      // display AJAX error msg
+      console.log("---------- AJAX put error ----------");
+      console.log(error);
+      console.log("^^^^^^^^^^ AJAX put error ^^^^^^^^^^");
+    });
+}
+
 function editPostTemplate(oPost) {
-  return `<input id="title">${oPost.title}</h3>`
+  return `<input id="title" value="${oPost.title}">`
     + `<textarea id="content">${oPost.content}</textarea><br>`
-    + `<button>Save</button>`;
+    + `<button onclick="onclickSave()">Save</button>`;
 }
 function renderEditPost(oPost) {
   const divBlogPost = document.getElementById("div-blog-post");
@@ -91,48 +114,54 @@ function init() {
   const hash = window.location.hash;
   console.log(`--- init(${hash})`, (new Date()).toString().slice(16,24));
 
-  const sCmd = determineCmd(hash);
-  console.log('~~~~ sCmd: ', sCmd);
-  switch (sCmd) {
-    case 'edit':
-      // render the edit post display area
-      // const currPost = aPosts.find(post => post.id === idCurrPost);
-      renderEditPost(determinePost());
-      return;
-      break;
-    case 'delete':
-      deletePost(determinePost())
-        .then((response) => {
-          console.log("axios delete success response: ", response);
-          // this will generate a data/render refresh
-          window.location.hash = "#";
-        })
-        .catch((error) => {
-          console.log("---------- AJAX delete error ----------");
-          console.log(error);
-          console.log("^^^^^^^^^^ AJAX delete error ^^^^^^^^^^");
-        });
-      return;
-    default:
-      // ignore unknown command
-  }
-
   // get all posts and render display
   axios.get(URL)
     .then((oResponse) => {
       // get posts sorted with most recently added first
       const aPosts = oResponse.data.sort((p1, p2) => p2.added.localeCompare(p1.added));
 
-      // render selection list of posts
+      // get the optional command
+      let sCmd = determineCmd(hash);
+
+      // get the current post id
       let idCurrPost = determinePost();
       if (!idCurrPost) {
         goToPost(aPosts[0]);
         idCurrPost = determinePost();
+        sCmd = ""; // clear the command so we don't execute command on aPost[0]
       }
+
+      // get current post
+      const currPost = aPosts.find(post => post.id === idCurrPost);
+
+      console.log('~~~~ sCmd: ', sCmd);
+      switch (sCmd) {
+        case 'edit':
+          // render the edit post display area
+          renderEditPost(currPost);
+          return;
+        case 'delete':
+          deletePost(determinePost())
+            .then((response) => {
+              console.log("axios delete success response: ", response);
+              // this will generate a data/render refresh
+              window.location.hash = "#";
+            })
+            .catch((error) => {
+              console.log("---------- AJAX delete error ----------");
+              console.log(error);
+              console.log("^^^^^^^^^^ AJAX delete error ^^^^^^^^^^");
+            });
+          return;
+        default:
+          // ignore unknown command
+      }
+
+      // render selection list of posts
       renderList(aPosts, idCurrPost);
 
       // render the post display area
-      const currPost = aPosts.find(post => post.id === idCurrPost);
+      // const currPost = aPosts.find(post => post.id === idCurrPost);
       renderDisplayPost(currPost);
     })
     .catch((error) => {
@@ -190,7 +219,7 @@ function onclickCreate() {
 *    toggle visibility of div-add-new and div-existing-post
 *
 * ===================================================== */
-function onclickSave() {
+function XXXonclickSave() {
 
   const sTitle = document.getElementById("title").value.trim();
   const sContent = document.getElementById("content").value.trim();

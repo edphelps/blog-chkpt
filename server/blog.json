@@ -1,10 +1,10 @@
 [
   {
     "id": "3",
-    "title": "What I ate today",
+    "title": "When I ate today",
     "content": "Breakfast, lunch, and dinner",
     "added": "2018-10-14T18:41:24.342Z",
-    "edited": false
+    "edited": true
   },
   {
     "id": "1",
@@ -15,16 +15,16 @@
   },
   {
     "id": "4",
-    "title": "Riding a bike",
-    "content": "Easy",
+    "title": "Riding a bike Yay",
+    "content": "Easy Yay",
     "added": "2018-10-14T18:40:24.342Z",
-    "edited": false
+    "edited": true
   },
   {
     "id": "5",
-    "title": "Driving a car",
+    "title": "Driving a boat",
     "content": "bad for the environment",
     "added": "2018-10-14T18:44:24.342Z",
-    "edited": false
+    "edited": true
   }
 ]

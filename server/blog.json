@@ -1,20 +1,6 @@
 [
   {
-    "title": "Staying up all night",
-    "content": "Not good",
-    "id": "4",
-    "added": "2018-10-16T01:36:34.141Z",
-    "edited": false
-  },
-  {
-    "title": "Why I like snow",
-    "content": "It's fluffy",
     "id": "3",
-    "added": "2018-10-16T00:35:32.738Z",
-    "edited": false
-  },
-  {
-    "id": "2",
     "title": "What I ate today",
     "content": "Breakfast, lunch, and dinner",
     "added": "2018-10-14T18:41:24.342Z",
@@ -24,7 +10,21 @@
     "id": "1",
     "title": "Why I like my dog",
     "content": "She doesn't bark too much",
-    "added": "2018-10-13T18:41:24.342Z",
+    "added": "2018-10-14T18:49:24.342Z",
+    "edited": false
+  },
+  {
+    "id": "4",
+    "title": "Riding a bike",
+    "content": "Easy",
+    "added": "2018-10-14T18:40:24.342Z",
+    "edited": false
+  },
+  {
+    "id": "5",
+    "title": "Driving a car",
+    "content": "bad for the environment",
+    "added": "2018-10-14T18:44:24.342Z",
     "edited": false
   }
 ]

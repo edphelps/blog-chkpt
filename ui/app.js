@@ -9,41 +9,77 @@ function determinePost() {
   // return post# from hash "#/posts/123/edit"
   return window.location.hash.replace('#/posts/','').replace(/\/.+/,'')
 }
+function determineCmd() {
+  // return 'edit' from hash "#/posts/123/edit"
+  // return 'delete' from hash "#/posts/123/delete"
+  // return 'save' from hash "#/posts/123/save"
+  // return 'new' from hash "#/posts/new"
+  // return '' from "#/posts/123"
+  return window.location.hash.replace('#/posts/','').replace(/[0-9]\//,'');
+}
 function goToPost(post) {
   // set hash to "#/posts/123"
   window.location.hash = `#/posts/${post.id}`
 }
 
-function sidebarItem(post) {
+function listItem(post) {
   return `
     <a href="#/posts/${post.id}" class="list-group-item list-group-item-action">
       ${post.title}
     </a>
   `;
 }
-function sidebarTemplate(posts, iCurrPost) {
+function listTemplate(posts) {
   const opening = `<ul class="list-group" id='list-of-posts'>`;
   const closing = `</ul>`;
-  const items = posts.map(sidebarItem).join('');
+  const items = posts.map(listItem).join('');
   return opening + items + closing;
 }
-function renderList(aPosts, iCurrPost) {
-  const divPostSel = document.getElementById("div-post-sel")
-  divPostSel.innerHTML = sidebarTemplate(aPosts, iCurrPost);
+function renderList(aPosts, idCurrPost) {
+
+  // create the <ul> list of <a> tags of blog titles
+  // <a> tags are "#/posts/123"
+  const divPostSel = document.getElementById("div-post-sel");
+  divPostSel.innerHTML = listTemplate(aPosts);
   const listOfPosts = document.getElementById('list-of-posts');
   console.log("listOfPosts: ", listOfPosts);
 
+  // select/highlight the current post from the list
   const ahrefs = listOfPosts.querySelectorAll('a');
   for (const ahref of ahrefs) {
-    console.log("ahref: ", ahref);
+    const ahrefPostId = ahref.href.split("#/posts/")[1];
+    if (ahrefPostId === idCurrPost) {
+      ahref.classList.add("active");
+      break;
+    }
   }
-  // for (let node of document.getElementById('list-of-posts').childNodes) {
-  //   console.log("node: ", node);
-  // }
 }
-function renderBlogPost(oPost) {
-  document.getElementById("title").value = (oPost) ? oPost.title : "--";
-  document.getElementById("content").value = (oPost) ? oPost.content : "--";
+
+function displayPostTemplate(oPost) {
+  return `<h3 id="title">${oPost.title}</h3>`
+    + `<p id="content">${oPost.content}</p><br>`
+    + `<p class="text-right"><a id="edit-post" href="#/posts/${oPost.id}/edit">edit</a>&nbsp;&nbsp;`
+    + `<a id="delete-post" href="#/posts/${oPost.id}/delete">delete</a></p>`
+}
+function renderDisplayPost(oPost) {
+  const divBlogPost = document.getElementById("div-blog-post");
+  divBlogPost.innerHTML = displayPostTemplate(oPost);
+}
+
+function editPostTemplate(oPost) {
+  return `<input id="title">${oPost.title}</h3>`
+    + `<textarea id="content">${oPost.content}</textarea><br>`
+    + `<button>Save</button>`;
+}
+function renderEditPost(oPost) {
+  const divBlogPost = document.getElementById("div-blog-post");
+  divBlogPost.innerHTML = editPostTemplate(oPost);
+}
+
+function deletePost(id) {
+  console.log("Deleting post: ", id);
+  const url = URL + id
+  return axios.delete(url);
 }
 
 /* ====================================================
@@ -55,10 +91,37 @@ function init() {
   const hash = window.location.hash;
   console.log(`--- init(${hash})`, (new Date()).toString().slice(16,24));
 
-  // get all posts
+  const sCmd = determineCmd(hash);
+  console.log('~~~~ sCmd: ', sCmd);
+  switch (sCmd) {
+    case 'edit':
+      // render the edit post display area
+      // const currPost = aPosts.find(post => post.id === idCurrPost);
+      renderEditPost(determinePost());
+      return;
+      break;
+    case 'delete':
+      deletePost(determinePost())
+        .then((response) => {
+          console.log("axios delete success response: ", response);
+          // this will generate a data/render refresh
+          window.location.hash = "#";
+        })
+        .catch((error) => {
+          console.log("---------- AJAX delete error ----------");
+          console.log(error);
+          console.log("^^^^^^^^^^ AJAX delete error ^^^^^^^^^^");
+        });
+      return;
+    default:
+      // ignore unknown command
+  }
+
+  // get all posts and render display
   axios.get(URL)
     .then((oResponse) => {
-      const aPosts = oResponse.data;
+      // get posts sorted with most recently added first
+      const aPosts = oResponse.data.sort((p1, p2) => p2.added.localeCompare(p1.added));
 
       // render selection list of posts
       let idCurrPost = determinePost();
@@ -68,15 +131,15 @@ function init() {
       }
       renderList(aPosts, idCurrPost);
 
-      // render the post edit area
+      // render the post display area
       const currPost = aPosts.find(post => post.id === idCurrPost);
-      renderBlogPost(currPost);
+      renderDisplayPost(currPost);
     })
     .catch((error) => {
       // display AJAX error msg
-      console.log("---------- AJAX error ----------");
-      console.log(`${error}`);
-      console.log("^^^^^^^^^^ AJAX error ^^^^^^^^^^");
+      console.log("---------- AJAX load error ----------");
+      console.log(error);
+      console.log("^^^^^^^^^^ AJAX load error ^^^^^^^^^^");
     });
 }
 
@@ -174,8 +237,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // init(); // asynch
 
-  document.getElementById("btn-create").onclick = onclickCreate;
-  document.getElementById("btn-save").onclick = onclickSave;
+  // document.getElementById("btn-create").onclick = onclickCreate;
+  // document.getElementById("btn-save").onclick = onclickSave;
 
   init(); // do a manual call in case user refreshed page, which causes it
           // to clear but doesn't change the hash so onhashchange() won't fire

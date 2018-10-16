@@ -66,7 +66,7 @@ function renderDisplayPost(oPost) {
   divBlogPost.innerHTML = displayPostTemplate(oPost);
 }
 
-function onclickSave() {
+function savePost() {
   const url = URL + determinePost();
   const oPost = {
     title: document.getElementById('title').value,
@@ -74,20 +74,34 @@ function onclickSave() {
   };
   console.log("*** put url: ", url);
   console.log("*** put val: ", oPost);
-  axios.put(url, oPost)
-    .then((response) => {
-      console.log("axios put success response: ", (response) ? response : "missing response");
-      // this will generate a data/render refresh
-      window.location.hash = `#/posts/${determinePost()}`;
-      console.log("NEW HASH AFTER PUT: ", window.location.hash);
-    })
-    .catch((error) => {
-      // display AJAX error msg
-      console.log("---------- AJAX put error ----------");
-      console.log(error);
-      console.log("^^^^^^^^^^ AJAX put error ^^^^^^^^^^");
-    });
+  return axios.put(url, oPost);
 }
+function onclickSave() {
+  window.location.hash = `#/posts/${determinePost()}/save`;
+}
+
+// function onclickSave() {
+//   const url = URL + determinePost();
+//   const oPost = {
+//     title: document.getElementById('title').value,
+//     content: document.getElementById('content').value,
+//   };
+//   console.log("*** put url: ", url);
+//   console.log("*** put val: ", oPost);
+//   axios.put(url, oPost)
+//     .then((response) => {
+//       console.log("axios put success response: ", (response) ? response : "missing response");
+//       // this will generate a data/render refresh
+//       window.location.hash = `#/posts/${determinePost()}`;
+//       console.log("NEW HASH AFTER PUT: ", window.location.hash);
+//     })
+//     .catch((error) => {
+//       // display AJAX error msg
+//       console.log("---------- AJAX put error ----------");
+//       console.log(error);
+//       console.log("^^^^^^^^^^ AJAX put error ^^^^^^^^^^");
+//     });
+// }
 
 function editPostTemplate(oPost) {
   return `<input id="title" value="${oPost.title}">`
@@ -139,6 +153,21 @@ function init() {
         case 'edit':
           // render the edit post display area
           renderEditPost(currPost);
+          return;
+        case 'save':
+          savePost()
+            .then((response) => {
+              console.log("axios put success response: ", (response) ? response : "missing response");
+              // this will generate a data/render refresh
+              window.location.hash = `#/posts/${determinePost()}`;
+              console.log("NEW HASH AFTER PUT: ", window.location.hash);
+            })
+            .catch((error) => {
+              // display AJAX error msg
+              console.log("---------- AJAX put error ----------");
+              console.log(error);
+              console.log("^^^^^^^^^^ AJAX put error ^^^^^^^^^^");
+            });
           return;
         case 'delete':
           deletePost(determinePost())

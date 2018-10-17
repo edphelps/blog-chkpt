@@ -48,7 +48,7 @@ function createPost(_oNewPost) {
       aPosts = _aPosts;
       const nextId = aPosts.reduce((acc, cur) => Math.max(acc, cur.id),0) + 1;
       // fill in the rest of the post's fields
-      oNewPost.id = nextId;
+      oNewPost.id = nextId.toString();
       oNewPost.added = new Date();
       oNewPost.edited = false;
       aPosts.unshift(oNewPost);

@@ -113,6 +113,34 @@ function renderEditPost(oPost) {
   divBlogPost.innerHTML = editPostTemplate(oPost);
 }
 
+function addPost() {
+  const url = URL;
+  const oPost = {
+    title: document.getElementById('title').value,
+    content: document.getElementById('content').value,
+  };
+  console.log("*** post url: ", url);
+  console.log("*** post val: ", oPost);
+  return axios.post(url, oPost);
+}
+
+function onclickSaveNew() {
+  console.log("----- onclickSaveNew!");
+  window.location.hash = `#/posts/add`;
+}
+function newPostTemplate() {
+  return `<input id="title" value="">`
+    + `<textarea id="content"></textarea><br>`
+    + `<button onclick="onclickSaveNew()">Add</button>`;
+}
+function renderNewPost(oPost) {
+  const divBlogPost = document.getElementById("div-blog-post");
+  divBlogPost.innerHTML = newPostTemplate(oPost);
+}
+function onclickCreate() {
+  window.location.hash = `#/posts/new`;;
+}
+
 function deletePost(id) {
   console.log("Deleting post: ", id);
   const url = URL + id
@@ -150,6 +178,24 @@ function init() {
 
       console.log('~~~~ sCmd: ', sCmd);
       switch (sCmd) {
+        case 'new':
+          renderNewPost();
+          return;
+        case 'add':
+          addPost()
+            .then((response) => {
+              console.log("axios add success response: ", (response) ? response : "missing response");
+              // this will generate a data/render refresh
+              window.location.hash = `#/posts/${response.data.id}`;
+              console.log("NEW HASH AFTER add: ", window.location.hash);
+            })
+            .catch((error) => {
+              // display AJAX error msg
+              console.log("---------- AJAX add error ----------");
+              console.log(error);
+              console.log("^^^^^^^^^^ AJAX add error ^^^^^^^^^^");
+            });
+          return;
         case 'edit':
           // render the edit post display area
           renderEditPost(currPost);
@@ -199,46 +245,6 @@ function init() {
       console.log(error);
       console.log("^^^^^^^^^^ AJAX load error ^^^^^^^^^^");
     });
-}
-
-/* ====================================================
-*  toggleAddNew() */
-/*
-*  Toggle visibility of div-add-new and div-existing-post
-*  in resopnse to clicking "Add a new blog post" or "Save"
-*  when adding a new post
-*
-* ===================================================== */
-// function toggleAddNewFields() {
-//   const btnAddNew = document.getElementById("btn-create-post");
-//   const divNewPost = document.getElementById("div-new-post");
-//   const divExistingPosts = document.getElementById("div-existing-posts");
-//
-//   // Show fields to add new post
-//   if (divNewPost.hidden) {
-//     btnAddNew.innerText = "Cancel new post";
-//     divNewPost.hidden = false;
-//     divExistingPosts.hidden = true;
-//
-//   // cancel adding new post
-//   } else {
-//     btnAddNew.innerText = "Add a new blog post";
-//     document.getElementById("title").value = "";
-//     document.getElementById("content").value = "";
-//     divNewPost.hidden = true;
-//     divExistingPosts.hidden = false;
-//   }
-// }
-
-/* ====================================================
-*  onclickCreate()
-*
-*  Click to add a new post.
-*    toggle visibility of div-add-new and div-existing-post
-*
-* ===================================================== */
-function onclickCreate() {
-  // toggleAddNewFields();
 }
 
 /* ====================================================
@@ -295,8 +301,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // init(); // asynch
 
-  // document.getElementById("btn-create").onclick = onclickCreate;
-  // document.getElementById("btn-save").onclick = onclickSave;
+  document.getElementById("create-post").onclick = onclickCreate;
 
   init(); // do a manual call in case user refreshed page, which causes it
           // to clear but doesn't change the hash so onhashchange() won't fire

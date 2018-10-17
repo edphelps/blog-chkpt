@@ -1,5 +1,12 @@
 [
   {
+    "title": "Periodic Table of Elements",
+    "content": "yup",
+    "id": "6",
+    "added": "2018-10-17T01:21:27.132Z",
+    "edited": false
+  },
+  {
     "id": "3",
     "title": "What I ate today!",
     "content": "Breakfast, lunch, and dinner!",
@@ -8,10 +15,10 @@
   },
   {
     "id": "1",
-    "title": "Why I like my dog",
-    "content": "She doesn't bark too much",
+    "title": "Why I like my doggie",
+    "content": "She doesn't bark too, too much",
     "added": "2018-10-14T18:49:24.342Z",
-    "edited": false
+    "edited": true
   },
   {
     "id": "4",

@@ -130,7 +130,10 @@ function init() {
   // since the goal of the hash is to be able to bookmark the URL we can't assume
   // that the app has an existing state or already loaded list of blog posts to
   // grab information from.
-  axios.get(URL) // load all posts (technically we only need the post ids and titles)
+
+  // load all posts (more efficient to cache these or only load titles
+  // then get content for current blog post)
+  axios.get(URL)
     .then((oResponse) => {
       // sort posts in reverse data order so most recent is first
       const aPosts = oResponse.data.sort((p1, p2) => p2.added.localeCompare(p1.added));

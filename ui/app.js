@@ -6,7 +6,7 @@ function determinePost() {
   // remove "#/posts/" and remove everything following
   return window.location.hash.replace('#/posts/','').replace(/\/.+/,'')
 }
-// get the command at the end of the hash: "#/posts/123/edit"
+// returned command at the end of the hash: "#/posts/123/edit"
 function determineCmd() {
   return window.location.hash.replace('#/posts/','').replace(/[0-9]\//,'');
 }
@@ -124,7 +124,7 @@ function deletePost(id) {
 // Render page and handle commands, called on all hash changes
 function init() {
   const { hash } = window.location;
-  console.log(`--- init(${hash})`, (new Date()).toString().slice(16,24)); // display w/ time
+  console.log(`--- init(${hash})`, (new Date()).toString().slice(16, 24)); // display w/ time
 
   // get all posts and render display
   axios.get(URL)

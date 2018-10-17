@@ -1,28 +1,21 @@
 
 const URL = "http://localhost:3000/posts/";
 
-/* ====================================================
-*  utils
-
-* ===================================================== */
 // return post# from hash "#/posts/123/edit"
 function determinePost() {
   // remove "#/posts/" and remove everything following
   return window.location.hash.replace('#/posts/','').replace(/\/.+/,'')
 }
+// get the command at the end of the hash: "#/posts/123/edit"
 function determineCmd() {
-  // return 'edit' from hash "#/posts/123/edit"
-  // return 'delete' from hash "#/posts/123/delete"
-  // return 'save' from hash "#/posts/123/save"
-  // return 'new' from hash "#/posts/new"
-  // return '' from "#/posts/123"
   return window.location.hash.replace('#/posts/','').replace(/[0-9]\//,'');
 }
+// add the post number to the hash "#/posts/123"
 function goToPost(post) {
-  // set hash to "#/posts/123"
   window.location.hash = `#/posts/${post.id}`
 }
 
+// manage the selection list of assignments
 function listItem(post) {
   return `
     <a href="#/posts/${post.id}" class="list-group-item list-group-item-action">
@@ -56,6 +49,7 @@ function renderList(aPosts, idCurrPost) {
   }
 }
 
+// manage displaying the current post
 function displayPostTemplate(oPost) {
   return `<h3 id="title">${oPost.title}</h3>`
     + `<p id="content">${oPost.content}</p><br>`
@@ -67,6 +61,7 @@ function renderDisplayPost(oPost) {
   divBlogPost.innerHTML = displayPostTemplate(oPost);
 }
 
+// manage editing and saving an existing post
 function savePost() {
   const url = URL + determinePost();
   const oPost = {
@@ -80,30 +75,6 @@ function savePost() {
 function onclickSave() {
   window.location.hash = `#/posts/${determinePost()}/save`;
 }
-
-// function onclickSave() {
-//   const url = URL + determinePost();
-//   const oPost = {
-//     title: document.getElementById('title').value,
-//     content: document.getElementById('content').value,
-//   };
-//   console.log("*** put url: ", url);
-//   console.log("*** put val: ", oPost);
-//   axios.put(url, oPost)
-//     .then((response) => {
-//       console.log("axios put success response: ", (response) ? response : "missing response");
-//       // this will generate a data/render refresh
-//       window.location.hash = `#/posts/${determinePost()}`;
-//       console.log("NEW HASH AFTER PUT: ", window.location.hash);
-//     })
-//     .catch((error) => {
-//       // display AJAX error msg
-//       console.log("---------- AJAX put error ----------");
-//       console.log(error);
-//       console.log("^^^^^^^^^^ AJAX put error ^^^^^^^^^^");
-//     });
-// }
-
 function editPostTemplate(oPost) {
   return `<input id="title" value="${oPost.title}">`
     + `<textarea id="content">${oPost.content}</textarea><br>`
@@ -114,6 +85,7 @@ function renderEditPost(oPost) {
   divBlogPost.innerHTML = editPostTemplate(oPost);
 }
 
+// manage creating a new post
 function addPost() {
   const url = URL;
   const oPost = {
@@ -124,7 +96,6 @@ function addPost() {
   console.log("*** post val: ", oPost);
   return axios.post(url, oPost);
 }
-
 function onclickSaveNew() {
   console.log("----- onclickSaveNew!");
   window.location.hash = `#/posts/add`;
@@ -139,23 +110,21 @@ function renderNewPost(oPost) {
   divBlogPost.innerHTML = newPostTemplate(oPost);
 }
 function onclickCreate() {
-  window.location.hash = `#/posts/new`;;
+  // handle the "create-post" button in the heading
+  window.location.hash = `#/posts/new`;
 }
 
+// handle the delete link for an existing post
 function deletePost(id) {
   console.log("Deleting post: ", id);
   const url = URL + id
   return axios.delete(url);
 }
 
-/* ====================================================
-*  init()
-*
-*  Initialize the page, called on all hash changes
-* ===================================================== */
+// Render page and handle commands, called on all hash changes
 function init() {
-  const hash = window.location.hash;
-  console.log(`--- init(${hash})`, (new Date()).toString().slice(16,24));
+  const { hash } = window.location;
+  console.log(`--- init(${hash})`, (new Date()).toString().slice(16,24)); // display w/ time
 
   // get all posts and render display
   axios.get(URL)
@@ -179,10 +148,10 @@ function init() {
 
       console.log('~~~~ sCmd: ', sCmd);
       switch (sCmd) {
-        case 'new':
+        case 'new': // setup empty data entry section for a new post
           renderNewPost();
           return;
-        case 'add':
+        case 'add': // handle Save button of a new post
           addPost()
             .then((response) => {
               console.log("axios add success response: ", (response) ? response : "missing response");
@@ -197,11 +166,11 @@ function init() {
               console.log("^^^^^^^^^^ AJAX add error ^^^^^^^^^^");
             });
           return;
-        case 'edit':
+        case 'edit': // handle Edit button of an existing post
           // render the edit post display area
           renderEditPost(currPost);
           return;
-        case 'save':
+        case 'save': // handle the Save button when editing existing post
           savePost()
             .then((response) => {
               console.log("axios put success response: ", (response) ? response : "missing response");
@@ -216,7 +185,7 @@ function init() {
               console.log("^^^^^^^^^^ AJAX put error ^^^^^^^^^^");
             });
           return;
-        case 'delete':
+        case 'delete': // handle delete button of an existing post
           deletePost(determinePost())
             .then((response) => {
               console.log("axios delete success response: ", response);
@@ -229,15 +198,14 @@ function init() {
               console.log("^^^^^^^^^^ AJAX delete error ^^^^^^^^^^");
             });
           return;
-        default:
+        default: // the parse is dumb so it gets other things as commands like the post# for "/#posts/123"
           // ignore unknown command
       }
 
-      // render selection list of posts
+      // render selection list of posts on left side
       renderList(aPosts, idCurrPost);
 
       // render the post display area
-      // const currPost = aPosts.find(post => post.id === idCurrPost);
       renderDisplayPost(currPost);
     })
     .catch((error) => {
@@ -248,60 +216,10 @@ function init() {
     });
 }
 
-/* ====================================================
-*  onclickSave()
-*
-*  Click to add a new post
-*    toggle visibility of div-add-new and div-existing-post
-*
-* ===================================================== */
-function XXXonclickSave() {
-
-  const sTitle = document.getElementById("title").value.trim();
-  const sContent = document.getElementById("content").value.trim();
-
-  // verify title and content fields are filled in
-  if (!sTitle || !sContent) {
-    window.alert("You must enter both a title and content");
-    return;
-  }
-
-  // create new blog post in database
-  const url = URL;
-  const oPost = {
-    title: sTitle,
-    content: sContent,
-  };
-  axios.post(url, oPost)
-    .then((oResponse) => {
-      // console.log("-- POST response --");
-      // console.log(`Data:${JSON.stringify(oResponse)}`);
-      // console.log("^^^POST response ^^^^^^^^");
-      console.log("--- AJAX SUCCESS ----");
-    })
-    .catch((error) => {
-      // display AJAX error msg
-      console.log("---------- AJAX POST error ---------");
-      console.log(`${error}`);
-      console.log("--------------- ERROR --------------");
-      // updateStatus(error.response.data.message);
-      // console.log("^^^^ ERROR ^^^^");
-    })
-    .then(() => {
-      // console.log("~~ toggleAddNewFields");
-      toggleAddNewFields();
-    });
-}
-
-/* ====================================================
-*  DOM Loaded
-*
-*  Init UI and setup event handlers
-* ===================================================== */
+// DOM loaded
 document.addEventListener('DOMContentLoaded', () => {
 
-  // init(); // asynch
-
+  // handler the the create-post button in the heading
   document.getElementById("create-post").onclick = onclickCreate;
 
   init(); // do a manual call in case user refreshed page, which causes it

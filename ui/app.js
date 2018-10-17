@@ -1,6 +1,11 @@
 
 const URL = "http://localhost:3000/posts/";
 
+
+// NOTE: minimal commenting used, easiest to read by
+//       compressing all the functions down with the arrow in left margin.
+
+
 // return post# from hash "#/posts/123/edit"
 function determinePost() {
   // remove "#/posts/" and remove everything following

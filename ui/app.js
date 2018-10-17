@@ -137,7 +137,7 @@ function init() {
 
       // get the current post id
       let idCurrPost = determinePost();
-      if (!idCurrPost) {
+      if (!idCurrPost) { // if loading page w/o a post number
         goToPost(aPosts[0]);
         idCurrPost = determinePost();
         sCmd = ""; // clear the command so we don't execute command on aPost[0]
@@ -148,10 +148,14 @@ function init() {
 
       console.log('~~~~ sCmd: ', sCmd);
       switch (sCmd) {
-        case 'new': // setup empty data entry section for a new post
+
+        // handle create-post btn and setup empty data entry section for a new post
+        case 'new':
           renderNewPost();
           return;
-        case 'add': // handle Save button of a new post
+
+        // handle Save button of a new post
+        case 'add':
           addPost()
             .then((response) => {
               console.log("axios add success response: ", (response) ? response : "missing response");
@@ -159,18 +163,22 @@ function init() {
               window.location.hash = `#/posts/${response.data.id}`;
               console.log("NEW HASH AFTER add: ", window.location.hash);
             })
-            .catch((error) => {
+            .catch((error) => { // TODO: could this be removed and have the final catch below catch the error???
               // display AJAX error msg
               console.log("---------- AJAX add error ----------");
               console.log(error);
               console.log("^^^^^^^^^^ AJAX add error ^^^^^^^^^^");
             });
           return;
-        case 'edit': // handle Edit button of an existing post
+
+        // handle Edit button of an existing post
+        case 'edit':
           // render the edit post display area
           renderEditPost(currPost);
           return;
-        case 'save': // handle the Save button when editing existing post
+
+        // handle the Save button when editing existing post
+        case 'save':
           savePost()
             .then((response) => {
               console.log("axios put success response: ", (response) ? response : "missing response");
@@ -185,7 +193,9 @@ function init() {
               console.log("^^^^^^^^^^ AJAX put error ^^^^^^^^^^");
             });
           return;
-        case 'delete': // handle delete button of an existing post
+
+        // handle delete button of an existing post
+        case 'delete':
           deletePost(determinePost())
             .then((response) => {
               console.log("axios delete success response: ", response);
@@ -198,14 +208,18 @@ function init() {
               console.log("^^^^^^^^^^ AJAX delete error ^^^^^^^^^^");
             });
           return;
-        default: // the parse is dumb so it gets other things as commands like the post# for "/#posts/123"
+
+        // the parse is dumb so it gets other things as commands like the post# for "/#posts/123"
+        default:
           // ignore unknown command
       }
+
+      // If there was no command then render list of posts and render the current post
 
       // render selection list of posts on left side
       renderList(aPosts, idCurrPost);
 
-      // render the post display area
+      // render the current post in the display area on the right
       renderDisplayPost(currPost);
     })
     .catch((error) => {

@@ -126,10 +126,13 @@ function init() {
   const { hash } = window.location;
   console.log(`--- init(${hash})`, (new Date()).toString().slice(16, 24)); // display w/ time
 
-  // get all posts and render display
-  axios.get(URL)
+  // get all blog posts and handle command or render fresh display
+  // since the goal of the hash is to be able to bookmark the URL we can't assume
+  // that the app has an existing state or already loaded list of blog posts to
+  // grab information from.
+  axios.get(URL) // load all posts (technically we only need the post ids and titles)
     .then((oResponse) => {
-      // get posts sorted with most recently added first
+      // sort posts in reverse data order so most recent is first
       const aPosts = oResponse.data.sort((p1, p2) => p2.added.localeCompare(p1.added));
 
       // get the optional command
@@ -140,12 +143,13 @@ function init() {
       if (!idCurrPost) { // if loading page w/o a post number
         goToPost(aPosts[0]);
         idCurrPost = determinePost();
-        sCmd = ""; // clear the command so we don't execute command on aPost[0]
+        sCmd = ""; // clear the command so we don't execute a command on aPost[0]
       }
 
       // get current post
       const currPost = aPosts.find(post => post.id === idCurrPost);
 
+      // react to cmd
       console.log('~~~~ sCmd: ', sCmd);
       switch (sCmd) {
 
@@ -163,7 +167,7 @@ function init() {
               window.location.hash = `#/posts/${response.data.id}`;
               console.log("NEW HASH AFTER add: ", window.location.hash);
             })
-            .catch((error) => { // TODO: could this be removed and have the final catch below catch the error???
+            .catch((error) => { // TODO: can this be removed and have the final catch below catch the error???
               // display AJAX error msg
               console.log("---------- AJAX add error ----------");
               console.log(error);

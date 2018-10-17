@@ -5,8 +5,9 @@ const URL = "http://localhost:3000/posts/";
 *  utils
 
 * ===================================================== */
+// return post# from hash "#/posts/123/edit"
 function determinePost() {
-  // return post# from hash "#/posts/123/edit"
+  // remove "#/posts/" and remove everything following
   return window.location.hash.replace('#/posts/','').replace(/\/.+/,'')
 }
 function determineCmd() {

@@ -6,21 +6,30 @@ const URL = "http://localhost:3000/posts/";
 //       compressing all the functions down with the arrow in left margin.
 
 
-// return post# from hash "#/posts/123/edit"
+/* ===============================================
+*  return post# from hash "#/posts/123/edit"
+*  =============================================== */
 function determinePost() {
   // remove "#/posts/" and remove everything following
   return window.location.hash.replace('#/posts/','').replace(/\/.+/,'')
 }
-// returned command at the end of the hash: "#/posts/123/edit"
+/* ===============================================
+*  returned command at the end of the hash: "#/posts/123/edit"
+*  =============================================== */
 function determineCmd() {
   return window.location.hash.replace('#/posts/','').replace(/[0-9]\//,'');
 }
-// add the post number to the hash "#/posts/123"
+/* ===============================================
+*  add the post number to the hash "#/posts/123"
+*  =============================================== */
 function goToPost(post) {
   window.location.hash = `#/posts/${post.id}`
 }
 
-// manage the selection list of assignments
+
+/* ===============================================
+*  manage the selection list of assignments
+*  =============================================== */
 function listItem(post) {
   return `
     <a href="#/posts/${post.id}" class="list-group-item list-group-item-action">
@@ -35,7 +44,6 @@ function listTemplate(posts) {
   return opening + items + closing;
 }
 function renderList(aPosts, idCurrPost) {
-
   // create the <ul> list of <a> tags of blog titles
   // <a> tags are "#/posts/123"
   const divPostSel = document.getElementById("div-post-sel");
@@ -54,7 +62,10 @@ function renderList(aPosts, idCurrPost) {
   }
 }
 
-// manage displaying the current post
+
+/* ===============================================
+*   manage displaying the current post
+*  =============================================== */
 function displayPostTemplate(oPost) {
   return `<h3 id="title">${oPost.title}</h3>`
     + `<p id="content">${oPost.content}</p><br>`
@@ -66,13 +77,21 @@ function renderDisplayPost(oPost) {
   divBlogPost.innerHTML = displayPostTemplate(oPost);
 }
 
-// manage editing and saving an existing post
+
+
+/* ===============================================
+*   manage editing and saving an existing post
+*  =============================================== */
 function savePost() {
   const url = URL + determinePost();
   const oPost = {
     title: document.getElementById('title').value,
     content: document.getElementById('content').value,
   };
+  if (!oPost.title)
+    oPost.title = "- blank -"
+  if (!oPost.content)
+    oPost.content = "- blank -"
   console.log("*** put url: ", url);
   console.log("*** put val: ", oPost);
   return axios.put(url, oPost);
@@ -81,22 +100,40 @@ function onclickSave() {
   window.location.hash = `#/posts/${determinePost()}/save`;
 }
 function editPostTemplate(oPost) {
-  return `<input id="title" value="${oPost.title}">`
-    + `<textarea id="content">${oPost.content}</textarea><br>`
-    + `<button onclick="onclickSave()">Save</button>`;
+  // the "required" doesn't work b/c we're not submitting the form
+  return `
+    <div class="form-group">
+      <label for="title">Title</label>
+      <input id="title" class="form-control" value="${oPost.title}" required><br>
+      <label for="content">Content</label>
+      <textarea class="form-control"  id="content" required>${oPost.content}</textarea><br>
+      <button onclick="onclickSave()">Save</button>
+    </div>`;
+  // return `<input id="title" value="${oPost.title}">`
+  //   + `<textarea id="content">${oPost.content}</textarea><br>`
+  //   + `<button onclick="onclickSave()">Save</button>`;
 }
 function renderEditPost(oPost) {
   const divBlogPost = document.getElementById("div-blog-post");
   divBlogPost.innerHTML = editPostTemplate(oPost);
+  document.getElementById("title").focus(); // autofocus fails btw edit and create screen displays
 }
 
-// manage creating a new post
+
+
+/* ===============================================
+*  manage creating a new post
+*  =============================================== */
 function addPost() {
   const url = URL;
   const oPost = {
     title: document.getElementById('title').value,
     content: document.getElementById('content').value,
   };
+  if (!oPost.title)
+    oPost.title = "- blank -"
+  if (!oPost.content)
+    oPost.content = "- blank -"
   console.log("*** post url: ", url);
   console.log("*** post val: ", oPost);
   return axios.post(url, oPost);
@@ -106,28 +143,43 @@ function onclickSaveNew() {
   window.location.hash = `#/posts/add`;
 }
 function newPostTemplate() {
-  return `<input id="title" value="">`
-    + `<textarea id="content"></textarea><br>`
-    + `<button onclick="onclickSaveNew()">Add</button>`;
+  // the "required" doesn't work b/c we're not submitting the form
+  return `
+    <div class="form-group">
+      <label for="title">Title</label>
+      <input id="title" class="form-control" value="" required><br>
+      <label for="content">Content</label>
+      <textarea class="form-control"  id="content" required></textarea><br>
+      <button onclick="onclickSaveNew()">Add</button>
+    </div>`;
 }
 function renderNewPost(oPost) {
   const divBlogPost = document.getElementById("div-blog-post");
   divBlogPost.innerHTML = newPostTemplate(oPost);
+  document.getElementById("title").focus(); // autofocus fails btw edit and create screen displays
 }
 function onclickCreate() {
   // handle the "create-post" button in the heading
   window.location.hash = `#/posts/new`;
 }
 
-// handle the delete link for an existing post
+
+
+/* ===============================================
+*  handle the delete link for an existing post
+*  =============================================== */
 function deletePost(id) {
   console.log("Deleting post: ", id);
   const url = URL + id
   return axios.delete(url);
 }
 
-// Render page and handle commands, called on all hash changes
-// If no cmd in the hash then show selection list of all posts.
+
+
+/* ===============================================
+*  Render page and handle commands, called on all hash changes
+*  If no cmd in the hash then show selection list of all posts.
+*  =============================================== */
 function init() {
   const { hash } = window.location;
   console.log(`--- init(${hash})`, (new Date()).toString().slice(16, 24)); // display w/ time
@@ -243,7 +295,10 @@ function init() {
     });
 }
 
-// DOM loaded
+
+/* ===============================================
+*  DOM loaded
+*  =============================================== */
 document.addEventListener('DOMContentLoaded', () => {
 
   // handler the the create-post button in the heading

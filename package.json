@@ -5,8 +5,13 @@
   "main": "controller.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon ./server/controller.js"
+    "start": "node ./server/controller.js",
+    "nodemon": "nodemon ./server/controller.js"
   },
+  "engines": {
+   "node": "v10.12.0"
+ },
+
   "repository": {
     "type": "git",
     "url": "git+https://github.com/edphelps/blog-chkpt.git"

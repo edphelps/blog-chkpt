@@ -1,5 +1,6 @@
 
-const URL = "http://localhost:3000/posts/";
+const URL = "posts/";
+// const URL = "http://localhost:3000/posts/";
 
 
 // NOTE: minimal commenting used, easiest to read by

@@ -175,8 +175,6 @@ function deletePost(id) {
   return axios.delete(url);
 }
 
-
-
 /* ===============================================
 *  Render page and handle commands, called on all hash changes
 *  If no cmd in the hash then show selection list of all posts.
@@ -190,7 +188,7 @@ function init() {
   // that the app has an existing state or already loaded list of blog posts to
   // grab information from.
 
-  // load all posts (more efficient to cache these or only load titles
+  // load all posts (TODO: more efficient to cache these or only load titles
   // then get content for current blog post)
   axios.get(URL)
     .then((oResponse) => {
